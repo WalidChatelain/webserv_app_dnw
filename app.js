@@ -9,8 +9,8 @@ const mongoose = require('mongoose');
 mongoose.Promise = Promise;
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/express-demo');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+var index = require('./app/routes/index');
+var users = require('./app/routes/users');
 
 var app = express();
 
