@@ -5,6 +5,7 @@ const Issue = require('../models/issue');
  // Get all isssues
  router.get('/', function (req, res, next) {
     // appel du modèle
+
     Issue.find(function(err, issue){
       if (err){
         res.status(500).send(err);
@@ -26,11 +27,12 @@ router.get('/:id', function (req, res, next) {
     }
     res.send(issue);
   });
+});
 
 // Post a new issue
 router.post('/', function (req, res, next) {
   var issue = new Issue(req.body);
-
+  console.log('OK');
   issue.save(function(err, createdIssue){
     if (err){
       res.status(500).send(err);
@@ -66,3 +68,5 @@ router.patch('/:id', function(req,res,next){
       });
   });
 });
+
+module.exports = router;

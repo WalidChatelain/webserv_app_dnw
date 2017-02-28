@@ -40,10 +40,7 @@ const issueSchema = new Schema({
   tags: [String]
 });
 
-// the map
-IssueSchema.index({
-	location: '2dsphere'
-});
+
 
 // Create the model from the schema and export it
 module.exports = mongoose.model('Issue', issueSchema);
