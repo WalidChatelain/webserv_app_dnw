@@ -1,7 +1,7 @@
 /* User model
  * A username, an email and a password are used for the authentification
  * There is also a role for each user : 
- * - Staff who fix the issues
+ * - Manager who fix the issues
  * - Citizen who spot and signal the issues
 */
 
@@ -11,13 +11,16 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   // Define the validation rules for users
   credentials: {
-  	username: {type: String, required: true},
+  	firstName: {type: String, min: 2, max: 20, required: true},
+  	lastName: {type: String, min: 2, max: 20, required: true},
   	email: {type: String, required: true},
-  	password: {type: String, required: true}
+  	password: {type: String, required: true},
+  	createdAt: {type: Date, required: true, default: Date.now}
   },
-  role: {type: String, required: true},
+  role: {type: String, enum: ['Citizen', 'Manager'], required: true},
 });
 
+userSchema.index({ firstName : 1, lastName : 1}, { unique: true });
 
 // Create the model from the schema and export it
 module.exports = mongoose.model('User', userSchema);
