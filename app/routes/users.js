@@ -51,7 +51,8 @@ router.patch('/:id', function(req,res,next){
       res.status(500).send(err);
       return;
     }
-    user.credentials.username = req.body.credentials.username;
+    user.credentials.lastName = req.body.credentials.lastName;
+    user.credentials.firstName = req.body.credentials.firstName;
     user.credentials.email = req.body.credentials.email;
     user.credentials.password = req.body.credentials.password;
     user.role = req.body.role;
@@ -62,6 +63,20 @@ router.patch('/:id', function(req,res,next){
       }
       res.send(updatedUser);
       });
+  });
+});
+
+// Delete an user with id
+router.delete('/:id', function(req,res,next){
+  var userId = req.params.id;
+
+  User.remove({_id: userId}, function(err, data){
+    if (err){
+      res.status(500).send(err);
+      return;
+    }
+    console.log('Deleted '+ data + 'informations from db');
+    res.sendStatus(204);
   });
 });
 
