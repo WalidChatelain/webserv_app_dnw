@@ -8,6 +8,7 @@ router.get('/', function(req, res, next) {
     if (err) {
       return next(err);
     }
+    console.log('OK');
     res.send(users);
   });
 });
@@ -27,22 +28,23 @@ router.get('/:id', function (req, res, next) {
 });
 
 // POST new user 
-router.post('/', function(req, res, next) {
-  // Create a new document from the JSON in the request body
-  const newUser = new User(req.body);
-  // Save that document
-  newUser.save(function(err, savedUser) {
-    if (err) {
-      return next(err);
+router.post('/', function (req, res, next) {
+  var user = new User(req.body);
+
+  user.save(function(err, createdUser){
+    if (err){
+      console.log('PEUXPASPOSTER');
+      res.status(500).send(err);
+      return;
     }
-    // Send the saved document in the response
-    res.send(savedUser);
+    res.send(createdUser);
   });
 });
 
 // UPDATE user with id
-router.put('/:id', function(req,res,next){
+router.patch('/:id', function(req,res,next){
   var userId = req.params.id;
+  //console.log("OK");
 
   User.findById(userId, function(err, user){
     if (err){
