@@ -12,22 +12,26 @@ const issueSchema = new Schema({
   type: {type: String, required: true},
   creationDate: {type: Date, required: true, default: Date.now},
   issueName: {type: String, required: true, max: 75},
-  description: {type: String, required: true},
-  author: {type: Schema.Types.ObjectId, ref: 'User', required: true},
-  assignedTo : {type: Schema.Types.ObjectId, ref: 'User'},
+  description: {type: String, max: 1000, required: false},
+  user: {type: Schema.Types.ObjectId, ref: 'User', required: true},
+  assignedTo: {type: Schema.Types.ObjectId, ref: 'User'},
+  imageUrl: {type: String, max: 500, required: false},
+  // Define de 4 states of an issue. The state can change :
+  // from new to inProgress, new to canceled, inProgress to completed
+  // A CODER State machine avec if imbriqué ou objet clé valeur.
   status: {
   	type: String,
   	required: true,
-  	match: /(created|acknowledged|assigned|in_progress|solved|rejected)/,
-  	default: "created"
+  	match: /^(new|inProgress|canceled|completed)$/,
+  	default: "new"
   },
   location: {
   	type: {type: String, required: true, default: "Point"},
   	coordinates: {type: [Number], required: true}
   },
-  action: [{
+  actions: [{
    	type: {type: String, required: true},
-  	date: {type: Date, required: true, default: Date.now},
+  	updateDate: {type: Date, required: true, default: Date.now},
   	user: {type: Schema.Types.ObjectId, ref: 'User', required: true},
   	content: {type: String},
   	status: {type: String},
@@ -35,6 +39,7 @@ const issueSchema = new Schema({
 
   tags: [String]
 });
+
 // the map
 IssueSchema.index({
 	location: '2dsphere'
