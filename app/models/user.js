@@ -10,10 +10,12 @@ const Schema = mongoose.Schema;
 // Define the schema for users
 const userSchema = new Schema({
   // Define the validation rules for users
-  username: {type: String, required: true},
-  email: {type: String, required: true},
-  password: {type: String, required true},
-  role: {type: String, required: true}
+  credentials: {
+  	username: {type: String, required: true},
+  	email: {type: String, required: true},
+  	password: {type: String, required true}
+  	},
+  role: {type: String, required: true},
 });
 
 
