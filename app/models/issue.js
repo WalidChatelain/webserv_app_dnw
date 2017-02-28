@@ -23,7 +23,7 @@ const issueSchema = new Schema({
   },
   location: {
   	type: {type: String, required: true, default: "Point"},
-  	coordinates: {type: [number], required: true}
+  	coordinates: {type: [Number], required: true}
   },
   action: [{
    	type: {type: String, required: true},
