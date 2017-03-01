@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const Issue = require('../models/issue');
+const lodash = require('lodash');
+
 /**
  * @api {get} /issues List issues
  * @apiName GetAllIssues
@@ -60,18 +62,42 @@ const Issue = require('../models/issue');
  * ]
  */
 
- // Get all isssues
+ // Get all isssues from most recent to older
  router.get('/', function (req, res, next) {
     // appel du modèle
-
-    Issue.find(function(err, issue){
+    Issue.find().sort('-creationDate').exec(function(err, issue){
       if (err){
-        res.status(500).send(err);
+        res.status(422).send(err);
         return;
       }
       res.send(issue);
     });
 });
+
+// Managing pagination and setting the headers
+router.get('/paginate', function (req, res, next) {
+    var page = req.query.page ? parseInt(req.query.page, 10) :1,
+        pageSize = req.query.pageSize ? parseInt(req.query.pageSize, 10): 30;
+
+    var offset = (page - 1) * pageSize,
+        limit = pageSize;
+        Issue.count(function(err, totalCount){
+          if (err){
+            res.status(500).send(err);
+            return;
+          }
+          res.set('X-Pagination-Page', page);
+          res.set('X-Pagination-Page-Size', pageSize);
+          res.set('X-Pagination-Total', totalCount);
+          Issue.find(function(err, issue){
+            if (err){
+              res.status(500).send(err);
+              return;
+            }
+            res.send(issue);
+          });
+        });
+  });
 
 // Get an issue with id
 router.get('/:id', function (req, res, next) {
@@ -102,6 +128,7 @@ router.post('/', function (req, res, next) {
 
 // Update issue with id
 router.patch('/:id', function(req,res,next){
+
   var issueId = req.params.id;
 
   Issue.findById(issueId, function(err, issue){
@@ -109,16 +136,20 @@ router.patch('/:id', function(req,res,next){
       res.status(500).send(err);
       return;
     }
-    issue.type = req.body.type;
+    const whitelist = lodash.pick(req.body, ['type', 'issueName', 'description', 'status', 'location', 'updateDate','actions','tags']);
+	lodash.assignIn(issue, whitelist);
+	//req.issue.updateDate = Date.now();
+
+    /*issue.type = req.body.type;
     issue.issueName = req.body.issueName;
     issue.description = req.body.description;
     issue.user = req.body.user;
     issue.status = req.body.status;
     issue.location = req.body.location;
     issue.actions = req.body.actions;
-    issue.tags = req.body.tags;
+    issue.tags = req.body.tags;*/
 
-    issue.save(req.body, function(err, updatedIssue){
+    issue.save(issue, function(err, updatedIssue){
       if (err){
         res.status(500).send(err);
         return;
