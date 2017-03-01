@@ -53,7 +53,7 @@ router.patch('/:id', function(req,res,next){
     }
     issue.type = req.body.type;
     issue.description = req.body.description;
-    issue.author = req.body.author;
+    issue.user = req.body.user;
     issue.status = req.body.status;
     issue.location = req.body.location;
     issue.action = req.body.action;
@@ -67,6 +67,19 @@ router.patch('/:id', function(req,res,next){
       res.send(updatedIssue);
       });
   });
+});
+
+// Find all issues from a user
+router.get('/user/:id', function (req,res,next){
+var userId = req.params.id;
+
+Issue.find({'user': userId}, function(err, issues){
+  if (err){
+    res.status(500).send(err);
+    return;
+  }
+  res.send(issues);
+});
 });
 
 module.exports = router;

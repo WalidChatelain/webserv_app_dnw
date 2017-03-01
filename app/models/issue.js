@@ -13,6 +13,7 @@ const issueSchema = new Schema({
   creationDate: {type: Date, required: true, default: Date.now},
   issueName: {type: String, required: true, max: 75},
   description: {type: String, max: 1000, required: false},
+  // Link to the user schema
   user: {type: Schema.Types.ObjectId, ref: 'User', required: true},
   assignedTo: {type: Schema.Types.ObjectId, ref: 'User'},
   imageUrl: {type: String, max: 500, required: false},
@@ -29,6 +30,7 @@ const issueSchema = new Schema({
   	type: {type: String, required: true, default: "Point"},
   	coordinates: {type: [Number], required: true}
   },
+  // Modifs faites par qui ou etc..
   actions: [{
    	type: {type: String, required: true},
   	updateDate: {type: Date, required: true, default: Date.now},

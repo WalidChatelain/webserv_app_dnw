@@ -17,7 +17,7 @@ const userSchema = new Schema({
   	password: {type: String, required: true},
   	createdAt: {type: Date, required: true, default: Date.now}
   },
-  role: {type: String, enum: ['Citizen', 'Manager'], required: true},
+  role: {type: String, enum: ['citizen', 'manager'], required: true},
 });
 
 userSchema.index({ firstName : 1, lastName : 1}, { unique: true });
