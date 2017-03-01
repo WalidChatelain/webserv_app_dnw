@@ -2,6 +2,57 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
 
+
+/**
+ * @api {get} /users List users
+ * @apiName GetAllUsers
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Get a list of all users by alphabetic order.
+ *
+ *
+ * @apiExample Example
+ *     GET /users
+ *
+ * @apiParam {Number} id The users-ID, generated automatically.
+ * @apiParam {String} role The users' role.
+ *
+ * @apiSuccess (Response body) {String} id The unique identifier of the user
+ * @apiSuccess (Response body) {String} role The role of the user (citizen or manager)
+ * @apiSuccess (Response body) {String} firstName The first name of the user
+ * @apiSuccess (Response body) {String} lastName The last name of the user
+ * @apiSuccess (Response body) {String} email The personal email of the user
+ * @apiSuccess (Response body) {String} password The password chosen by the user
+ * @apiSuccess (Response body) {Date} createdAt The date at which the user was created
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Link: &lt;https://heigvd-webserv-2017-team-4.herokuapp.com/users
+ *
+ * [
+ * {
+ *   "_id": "58b6b26381e7e50011e69124",
+ *   "role": "citizen",
+ *   "firstName": "Daniel",
+ *   "lastName": "Mendes",
+ *   "email": "hkshau",
+ *   "password": "1234567",
+ *    "createdAt": "2017-03-01T11:37:07.113Z"
+ * },
+ * {
+ *   "_id": "58b6b26f81e7e50011e69126",
+ *   "role": "citizen",
+ *   "firstName": "David",
+ *   "lastName": "Mendes",
+ *  "email": "hkshau",
+ *  "password": "1234567",
+ *   "createdAt": "2017-03-01T11:37:19.613Z"
+ * }
+ * ]
+ */
+
+
 // GET all users 
 router.get('/', function(req, res, next) {
   User.find().sort('lastName').exec(function(err, users) {
@@ -12,6 +63,47 @@ router.get('/', function(req, res, next) {
     res.send(users);
   });
 });
+
+/**
+ * @api {get} /users Retrieve user
+ * @apiName GetUserById
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Get a specific user by his unique id
+ *
+ *
+ * @apiParam {Number} id The users-ID, generated automatically.
+ * @apiParam {String} role The users' role.
+ *
+ *
+ * @apiExample Example
+ *     GET /users/58b6b26381e7e50011e69124
+ *
+ * @apiSuccess (Response body) {String} id The unique identifier of the user
+ * @apiSuccess (Response body) {String} role The role of the user (citizen or manager)
+ * @apiSuccess (Response body) {String} firstName The first name of the user
+ * @apiSuccess (Response body) {String} lastName The last name of the user
+ * @apiSuccess (Response body) {String} email The personal email of the user
+ * @apiSuccess (Response body) {String} password The password chosen by the user
+ * @apiSuccess (Response body) {Date} createdAt The date at which the user was created
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Link: &lt;https://heigvd-webserv-2017-team-4.herokuapp.com/users/58b6b26381e7e50011e69124
+ *
+ * [
+ * {
+ *   "_id": "58b6b26381e7e50011e69124",
+ *   "role": "citizen",
+ *   "firstName": "Daniel",
+ *   "lastName": "Mendes",
+ *   "email": "hkshau",
+ *   "password": "1234567",
+ *    "createdAt": "2017-03-01T11:37:07.113Z"
+ * }
+ * ]
+ */
 
 // GET user with id 
 router.get('/:id', function (req, res, next) {
@@ -27,6 +119,84 @@ router.get('/:id', function (req, res, next) {
   });
 });
 
+/**
+ * @api {post} /users Create a user
+ * @apiName CreateUser
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Registers a new user.
+ *
+ * @apiParam {Number} id The users-ID, generated automatically.
+ * @apiParam {String} role The users' role.
+ *
+ *
+ * @apiExample Example
+ *     POST /users HTTP/1.1
+ *     Content-Type: application/json
+ *
+ * {
+ *  "role": "citizen",
+ *  "firstName": "Max",
+ *  "lastName": "Hibou",
+ *  "email": "coucouat.cim",
+ *  "password": "1234567",
+ *  "_id": "58b6cd595506470011dd235b",
+ *  "createdAt": "2017-03-01T13:32:09.332Z"
+ * }
+ *
+ * @apiSuccess (Response body) {String} id The unique identifier of the user
+ * @apiSuccess (Response body) {String} role The role of the user (citizen or manager)
+ * @apiSuccess (Response body) {String} firstName The first name of the user
+ * @apiSuccess (Response body) {String} lastName The last name of the user
+ * @apiSuccess (Response body) {String} email The personal email of the user
+ * @apiSuccess (Response body) {String} password The password chosen by the user
+ * @apiSuccess (Response body) {Date} createdAt The date at which the user was created
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Link: &lt;https://heigvd-webserv-2017-team-4.herokuapp.com/users/58b6b26381e7e50011e69124
+ *
+ * [
+ *   {
+ *    "role": "citizen",
+ *    "firstName": "Max",
+ *    "lastName": "Hibou",
+ *    "email": "coucouat.cim",
+ *    "password": "1234567",
+ *    "_id": "58b6cd595506470011dd235b",
+ *    "createdAt": "2017-03-01T13:32:09.332Z"
+ *  }
+ * ]
+ *
+ * @apiError {Object} 422/UnprocessableEntity Some of the user's properties are invalid
+ *
+ * @apiErrorExample {json} 422 Unprocessable Entity
+ *     HTTP/1.1 422 Unprocessable Entity
+ *     Content-Type: application/json
+ *
+ * {
+ * "errors": {
+ *   "firstName": {
+ *     "message": "Path `firstName` is required.",
+ *     "name": "ValidatorError",
+ *     "properties": {
+ *       "type": "required",
+ *       "message": "Path `{PATH}` is required.",
+ *       "path": "firstName",
+ *       "value": ""
+ *     },
+ *     "kind": "required",
+ *     "path": "firstName",
+ *     "value": ""
+ *   }
+ * },
+ * "message": "User validation failed",
+ * "name": "ValidationError"
+ * }
+ */
+
+
 // POST new user 
 router.post('/', function (req, res, next) {
   var user = new User(req.body);
@@ -40,6 +210,50 @@ router.post('/', function (req, res, next) {
     res.send(createdUser);
   });
 });
+
+/**
+ * @api {patch} users/:id Partially Update a user
+ * @apiName PartiallyUpdateUser
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Partially updates a user's data (only the properties found in the request body will be updated).
+ * All properties are optional.
+ *
+ * @apiParam {Number} id The users-ID, generated automatically.
+ * @apiParam {String} role The users' role.
+ *
+ * @apiExample Example
+ *     PATCH users/58b6d6455506470011dd235f HTTP/1.1
+ *     Content-Type: application/json
+ *
+ * {
+ *  "email": "monvraiemail",
+ *  "password": "hello",
+ * }
+ *
+ * @apiSuccess (Response body) {String} id The unique identifier of the user
+ * @apiSuccess (Response body) {String} role The role of the user (citizen or manager)
+ * @apiSuccess (Response body) {String} firstName The first name of the user
+ * @apiSuccess (Response body) {String} lastName The last name of the user
+ * @apiSuccess (Response body) {String} email The personal email of the user
+ * @apiSuccess (Response body) {String} password The password chosen by the user
+ * @apiSuccess (Response body) {Date} createdAt The date at which the user was created
+ *
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *
+ * {
+ *  "_id": "58b6d6455506470011dd235f",
+ *  "role": "citizen",
+ *  "firstName": "Walid",
+ *  "lastName": "Chatelain",
+ *  "email": "monvraiemail",
+ *  "password": "hello",
+ *  "createdAt": "2017-03-01T14:10:13.561Z"
+ * }
+ */
 
 // UPDATE user with id
 router.patch('/:id', function(req,res,next){
@@ -65,6 +279,32 @@ router.patch('/:id', function(req,res,next){
       });
   });
 });
+
+/**
+ * @api {delete} users/:id Delete a user
+ * @apiName DeleteUser
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Permanently deletes a user.
+ *
+ * @apiParam {Number} id The users-ID, generated automatically.
+ * @apiParam {String} role The users' role.
+ *
+ * @apiExample Example
+ *     DELETE users/58b6d6455506470011dd235f HTTP/1.1
+ *
+ * @apiSuccess (Response body) {String} id The unique identifier of the user
+ * @apiSuccess (Response body) {String} role The role of the user (citizen or manager)
+ * @apiSuccess (Response body) {String} firstName The first name of the user
+ * @apiSuccess (Response body) {String} lastName The last name of the user
+ * @apiSuccess (Response body) {String} email The personal email of the user
+ * @apiSuccess (Response body) {String} password The password chosen by the user
+ * @apiSuccess (Response body) {Date} createdAt The date at which the user was created
+ *
+ * @apiSuccessExample 204 No Content
+ *     HTTP/1.1 204 No Content
+ */
+
 
 // Delete an user with id
 router.delete('/:id', function(req,res,next){

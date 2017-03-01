@@ -2,6 +2,65 @@ var express = require('express');
 var router = express.Router();
 const Issue = require('../models/issue');
 
+/**
+ * @api {get} /issues List issues
+ * @apiName GetAllIssues
+ * @apiGroup Issues
+ * @apiVersion 1.0.0
+ * @apiDescription Get a paginated list of all issues from the most recent to the oldest.
+ *
+ * @apiExample Example
+ *     GET /issues
+ *
+ * @apiSuccess (Response body) {Number} _id The unique identifier of the issue.
+ * @apiSuccess (Response body) {String} type The type of the issue.
+ * @apiSuccess (Response body) {String} issueName The name of the issue.
+ * @apiSuccess (Response body) {String} description A short description of the issue.
+ * @apiSuccess (Response body) {String} user The user who created the issue.
+ * @apiSuccess (Response body) {String} tags The tag of the issue.
+ * @apiSuccess (Response body) {Date}   creationDate The date at which the issue was created.
+ * @apiSuccess (Response body) {Number} location The location where is the issue which contain coordinates and type.
+ * @apiSuccess (Response body) {String} status The status of the issue (inProgress, canceled, completed).
+ *
+ * @apiSuccess (Response body) {Object[]} actions       action of an issue.
+ * @apiSuccess (Response body) {String} actions.type The type of the action.
+ * @apiSuccess (Response body) {String} actions.user The user who take the action.
+ * @apiSuccess (Response body) {Number} actions._id The unique identifier of the action.
+ * @apiSuccess (Response body) {Date}   actions.updateDate The date of the action which mean it is the date at which the issue was uptadeted.
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Link: &lt;https://heigvd-webserv-2017-team-4.herokuapp.com/issues
+ *
+ *[
+ * {
+ *     "_id": "58b6c5775506470011dd2357",
+ *     "type": "Détérioration",
+ *     "issueName": "graffiti",
+ *     "description": "un autre graff trop stylé",
+ *     "user": "58b559a31277be1abc493011",
+ *     "tags": [],
+ *     "actions": [
+ *       {
+ *         "type": "test",
+ *         "user": "58b559a31277be1abc493011",
+ *         "_id": "58b6c5775506470011dd2358",
+ *         "updateDate": "2017-03-01T12:58:31.178Z"
+ *       }
+ *     ],
+ *     "location": {
+ *       "coordinates": [
+ *         23
+ *       ],
+ *       "type": "Point"
+ *     },
+ *     "status": "inProgress",
+ *     "creationDate": "2017-03-01T12:58:31.160Z"
+ *   },
+ * ]
+ */
+
  // Get all isssues
  router.get('/', function (req, res, next) {
     // appel du modèle
