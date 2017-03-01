@@ -52,11 +52,12 @@ router.patch('/:id', function(req,res,next){
       return;
     }
     issue.type = req.body.type;
+    issue.issueName = req.body.issueName;
     issue.description = req.body.description;
     issue.user = req.body.user;
     issue.status = req.body.status;
     issue.location = req.body.location;
-    issue.action = req.body.action;
+    issue.actions = req.body.actions;
     issue.tags = req.body.tags;
 
     issue.save(req.body, function(err, updatedIssue){
@@ -81,5 +82,18 @@ Issue.find({'user': userId}, function(err, issues){
   res.send(issues);
 });
 });
+
+// Find all issues from a type
+router.get('/type/:type', function (req,res,next){
+    var type = req.params.type;
+
+    Issue.find({'type': type}, function(err, issues){
+      if (err){
+        res.status(500).send(err);
+        return;
+      }
+      res.send(issues);
+    });
+  });
 
 module.exports = router;

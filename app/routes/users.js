@@ -51,10 +51,10 @@ router.patch('/:id', function(req,res,next){
       res.status(500).send(err);
       return;
     }
-    user.credentials.lastName = req.body.credentials.lastName;
-    user.credentials.firstName = req.body.credentials.firstName;
-    user.credentials.email = req.body.credentials.email;
-    user.credentials.password = req.body.credentials.password;
+    user.lastName = req.body.lastName;
+    user.firstName = req.body.firstName;
+    user.email = req.body.email;
+    user.password = req.body.password;
     user.role = req.body.role;
     user.save(req.body, function(err, updatedUser){
       if (err){

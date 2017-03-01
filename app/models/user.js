@@ -10,14 +10,14 @@ const Schema = mongoose.Schema;
 // Define the schema for users
 const userSchema = new Schema({
   // Define the validation rules for users
-  credentials: {
+
   	firstName: {type: String, min: 2, max: 20, required: true},
   	lastName: {type: String, min: 2, max: 20, required: true},
   	email: {type: String, required: true},
   	password: {type: String, required: true},
-  	createdAt: {type: Date, required: true, default: Date.now}
-  },
-  role: {type: String, enum: ['citizen', 'manager'], required: true},
+  	createdAt: {type: Date, required: true, default: Date.now},
+	role: {type: String, enum: ['citizen', 'manager'], required: true}
+
 });
 
 userSchema.index({ firstName : 1, lastName : 1}, { unique: true });
