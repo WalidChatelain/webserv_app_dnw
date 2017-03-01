@@ -96,4 +96,20 @@ router.get('/type/:type', function (req,res,next){
     });
   });
 
+// Delete an user with id
+router.delete('/:id', function(req,res,next){
+  var issueId = req.params.id;
+
+  Issue.remove({_id: issueId}, function(err, data){
+    if (err){
+      res.status(500).send(err);
+      return;
+    }
+    console.log('Deleted '+ data + 'informations from db');
+    res.sendStatus(204);
+  });
+});
+
+
+
 module.exports = router;
