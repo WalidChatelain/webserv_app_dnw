@@ -30,7 +30,7 @@ const issueSchema = new Schema({
   	type: {type: String, required: true, default: "Point"},
   	coordinates: {type: [Number], required: true}
   },
-  // Modifs faites par qui ou etc..
+  // Actions modifications
   actions: [{
    	type: {type: String, required: true},
   	updateDate: {type: Date, required: true, default: Date.now},
