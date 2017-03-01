@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
+const lodash = require('lodash');
 
 
 /**
@@ -265,12 +266,15 @@ router.patch('/:id', function(req,res,next){
       res.status(500).send(err);
       return;
     }
+    const whitelist = lodash.pick(req.body, ['lastName', 'firstName', 'email', 'password']);
+    lodash.assignIn(user, whitelist);
+    /*
     user.lastName = req.body.lastName;
     user.firstName = req.body.firstName;
     user.email = req.body.email;
     user.password = req.body.password;
-    user.role = req.body.role;
-    user.save(req.body, function(err, updatedUser){
+    user.role = req.body.role;*/
+    user.save(user, function(err, updatedUser){
       if (err){
         res.status(500).send(err);
         return;
