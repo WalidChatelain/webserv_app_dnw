@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
+const Issue = require('../models/issue');
 const lodash = require('lodash');
 
 
@@ -53,17 +54,63 @@ const lodash = require('lodash');
  * ]
  */
 
-
-// GET all users 
 router.get('/', function(req, res, next) {
+   User.find().sort('lastName').exec(function(err, users) {
+      if (err) {
+        return next(err);
+      }
+      const usersIds = users.map(user => user._id);
+      console.log(usersIds);
+      Issue.aggregate([
+      {
+        $match: { // Select issues created by the people we are interested in
+          user: { $in: usersIds }
+        }
+      },
+      {
+        $group: { // Group the issues by user ID
+            _id: '$user',
+            issuesCount: { // Count the number of issues for that ID
+              $sum: 1
+            }
+        }
+      }
+    ], function(err, results) {
+        if (err) {
+          return next(err);
+        }
+        // Convert the User documents to JSON
+        const userJson = users.map(user => user.toJSON());
+        console.log(userJson);
+
+        // For each result...
+        results.forEach(function(result) {
+          // Get the director ID (that was used to $group)...
+          const resultId = result._id.toString();
+          // Find the corresponding person...
+          const correspondingPerson = userJson.find(user => user._id == resultId);
+          // And attach the new property
+          correspondingPerson.createdIssuesCount = result.issuesCount;
+        });
+        // Send the enriched response
+        res.send(userJson);
+      });
+
+    });
+ });
+// GET all users 
+/*router.get('/', function(req, res, next) {
   User.find().sort('lastName').exec(function(err, users) {
     if (err) {
-      return next(err);
+      res.status(404).send(err);
+      return;
     }
     console.log('OK');
     res.send(users);
   });
-});
+});/*
+
+
 
 /**
  * @api {get} /users Retrieve user
@@ -113,7 +160,7 @@ router.get('/:id', function (req, res, next) {
 
   User.findById(userId, function(err, user){
     if (err){
-      res.status(500).send(err);
+      res.status(404).send(err);
       return;
     }
     res.send(user);
@@ -204,8 +251,8 @@ router.post('/', function (req, res, next) {
 
   user.save(function(err, createdUser){
     if (err){
-      console.log('PEUXPASPOSTER');
-      res.status(500).send(err);
+      //console.log('PEUXPASPOSTER');
+      res.status(400).send(err);
       return;
     }
     res.send(createdUser);
@@ -263,7 +310,7 @@ router.patch('/:id', function(req,res,next){
 
   User.findById(userId, function(err, user){
     if (err){
-      res.status(500).send(err);
+      res.status(404).send(err);
       return;
     }
     const whitelist = lodash.pick(req.body, ['lastName', 'firstName', 'email', 'password']);
@@ -276,7 +323,7 @@ router.patch('/:id', function(req,res,next){
     user.role = req.body.role;*/
     user.save(user, function(err, updatedUser){
       if (err){
-        res.status(500).send(err);
+        res.status(400).send(err);
         return;
       }
       res.send(updatedUser);
@@ -310,18 +357,50 @@ router.patch('/:id', function(req,res,next){
  */
 
 
-// Delete an user with id
+// DELETE an user with id
 router.delete('/:id', function(req,res,next){
   var userId = req.params.id;
 
   User.remove({_id: userId}, function(err, data){
     if (err){
-      res.status(500).send(err);
+      res.status(404).send(err);
       return;
     }
     console.log('Deleted '+ data + 'informations from db');
     res.sendStatus(204);
   });
 });
+
+
+
+// GET all issues from a user
+router.get('/user/:id', function (req,res,next){
+var userId = req.params.id;
+
+Issue.find({'user': userId}, function(err, issues){
+  if (err){
+    res.status(404).send(err);
+    return;
+  }
+  res.send(issues);
+});
+});
+
+// DELETE all issues from a user
+router.delete('/user/:id', function (req,res,next){
+var userId = req.params.id;
+
+Issue.remove({'user': userId}, function(err, data){
+  if (err){
+    res.status(404).send(err);
+    return;
+  }
+  console.log('Deleted '+ data + 'informations from db');
+    res.sendStatus(204);
+});
+});
+
+
+
 
 module.exports = router;

@@ -67,7 +67,7 @@ const lodash = require('lodash');
     // appel du modèle
     Issue.find().sort('-creationDate').exec(function(err, issue){
       if (err){
-        res.status(422).send(err);
+        res.status(404).send(err);
         return;
       }
       res.send(issue);
@@ -83,7 +83,7 @@ router.get('/paginate', function (req, res, next) {
         limit = pageSize;
         Issue.count(function(err, totalCount){
           if (err){
-            res.status(500).send(err);
+            res.status(422).send(err);
             return;
           }
           res.set('X-Pagination-Page', page);
@@ -91,7 +91,7 @@ router.get('/paginate', function (req, res, next) {
           res.set('X-Pagination-Total', totalCount);
           Issue.find(function(err, issue){
             if (err){
-              res.status(500).send(err);
+              res.status(404).send(err);
               return;
             }
             res.send(issue);
@@ -106,7 +106,7 @@ router.get('/:id', function (req, res, next) {
 
   Issue.findById(issueId, function(err, issue){
     if (err){
-      res.status(500).send(err);
+      res.status(404).send(err);
       return;
     }
     res.send(issue);
@@ -119,7 +119,7 @@ router.post('/', function (req, res, next) {
   console.log('OK');
   issue.save(function(err, createdIssue){
     if (err){
-      res.status(500).send(err);
+      res.status(400).send(err);
       return;
     }
     res.send(createdIssue);
@@ -133,7 +133,7 @@ router.patch('/:id', function(req,res,next){
 
   Issue.findById(issueId, function(err, issue){
     if (err){
-      res.status(500).send(err);
+      res.status(404).send(err);
       return;
     }
     const whitelist = lodash.pick(req.body, ['type', 'issueName', 'description', 'status', 'location', 'updateDate','actions','tags']);
@@ -151,7 +151,7 @@ router.patch('/:id', function(req,res,next){
 
     issue.save(issue, function(err, updatedIssue){
       if (err){
-        res.status(500).send(err);
+        res.status(400).send(err);
         return;
       }
       res.send(updatedIssue);
@@ -159,26 +159,26 @@ router.patch('/:id', function(req,res,next){
   });
 });
 
-// Find all issues from a user
-router.get('/user/:id', function (req,res,next){
+// Find all issues from a user ----- Fonction déplacée dans les routes users
+/*router.get('/user/:id', function (req,res,next){
 var userId = req.params.id;
 
 Issue.find({'user': userId}, function(err, issues){
   if (err){
-    res.status(500).send(err);
+    res.status(404).send(err);
     return;
   }
   res.send(issues);
 });
-});
+});*/
 
-// Find all issues from a type
+// FILTER : Find all issues from a type
 router.get('/type/:type', function (req,res,next){
     var type = req.params.type;
 
     Issue.find({'type': type}, function(err, issues){
       if (err){
-        res.status(500).send(err);
+        res.status(404).send(err);
         return;
       }
       res.send(issues);
@@ -191,7 +191,7 @@ router.delete('/:id', function(req,res,next){
 
   Issue.remove({_id: issueId}, function(err, data){
     if (err){
-      res.status(500).send(err);
+      res.status(404).send(err);
       return;
     }
     console.log('Deleted '+ data + 'informations from db');
